@@ -36,10 +36,13 @@
     <?php else: ?>
         <?php foreach ($products as $product): ?>
             <div class="product-card">
-                <h3><?= htmlspecialchars($product['name']) ?></h3>
-                <p>$<?= number_format($product['price'], 2) ?></p>
-                <a href="product-details.php?slug=<?= urlencode($product['slug']) ?>">View Details</a>
-            </div>
+    <?php if ($product['image']): ?>
+        <img src="images/products/<?= htmlspecialchars($product['image']) ?>" alt="<?= htmlspecialchars($product['name']) ?>" class="product-thumb">
+    <?php endif; ?>
+    <h3><?= htmlspecialchars($product['name']) ?></h3>
+    <p>$<?= number_format($product['price'], 2) ?></p>
+    <a href="product-details.php?slug=<?= urlencode($product['slug']) ?>">View Details</a>
+</div>
         <?php endforeach; ?>
     <?php endif; ?>
 </div>
