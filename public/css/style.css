@@ -206,3 +206,69 @@ main { padding: 30px; max-width: 1100px; margin: 0 auto; }
     cursor: pointer;
     margin-top: 10px;
 }
+.admin-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+}
+.stat-card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+}
+.stat-card h3 {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 8px;
+}
+.stat-card p {
+    font-size: 28px;
+    font-weight: bold;
+    color: #1a1a2e;
+}
+.admin-links {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+.admin-btn {
+    background: #1a1a2e;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+}
+.admin-form {
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.admin-form label {
+    font-weight: bold;
+}
+.admin-form input, .admin-form select, .admin-form textarea {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-family: inherit;
+}
+.admin-form button {
+    background: #1a1a2e;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+}
+.status-form select {
+    padding: 6px;
+}
