@@ -25,18 +25,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $description = trim($_POST['description'] ?? '');
     $price = (float)($_POST['price'] ?? 0);
     $stock = (int)($_POST['stock'] ?? 0);
+    $imageName = $product['image'];
 
     if ($name === '') $errors[] = "Product name is required.";
     if ($price <= 0) $errors[] = "Price must be greater than 0.";
     if ($stock < 0) $errors[] = "Stock cannot be negative.";
 
+    // Handle new image upload (optional — only replace if a new file is chosen)
+    if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+        $fileType = mime_content_type($_FILES['image']['tmp_name']);
+
+        if (!in_array($fileType, $allowedTypes)) {
+            $errors[] = "Image must be a JPG, PNG, or WEBP file.";
+        } elseif ($_FILES['image']['size'] > 3 * 1024 * 1024) {
+            $errors[] = "Image must be under 3MB.";
+        } else {
+            $ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
+            $newImageName = uniqid('product_') . '.' . $ext;
+            $uploadDir = __DIR__ . '/../public/images/products/';
+
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+
+            if (move_uploaded_file($_FILES['image']['tmp_name'], $uploadDir . $newImageName)) {
+                // Delete old image if it exists
+                if ($imageName && file_exists($uploadDir . $imageName)) {
+                    unlink($uploadDir . $imageName);
+                }
+                $imageName = $newImageName;
+            } else {
+                $errors[] = "Failed to upload new image. Please try again.";
+            }
+        }
+    }
+
     if (empty($errors)) {
-        $update = $pdo->prepare("UPDATE products SET category_id = ?, name = ?, description = ?, price = ?, stock = ? WHERE id = ?");
-        $update->execute([$categoryId ?: null, $name, $description, $price, $stock, $productId]);
+        $update = $pdo->prepare("UPDATE products SET category_id = ?, name = ?, description = ?, price = ?, stock = ?, image = ? WHERE id = ?");
+        $update->execute([$categoryId ?: null, $name, $description, $price, $stock, $imageName, $productId]);
 
         $success = true;
 
-        // Refresh product data for the form
         $stmt = $pdo->prepare("SELECT * FROM products WHERE id = ?");
         $stmt->execute([$productId]);
         $product = $stmt->fetch();
@@ -50,9 +80,7 @@ $categories = $pdo->query("SELECT * FROM categories ORDER BY name")->fetchAll();
 <h1>Edit Product</h1>
 
 <?php if ($success): ?>
-    <div class="success-box">
-        <p>Product updated successfully!</p>
-    </div>
+    <div class="success-box"><p>Product updated successfully!</p></div>
 <?php endif; ?>
 
 <?php if (!empty($errors)): ?>
@@ -63,7 +91,11 @@ $categories = $pdo->query("SELECT * FROM categories ORDER BY name")->fetchAll();
     </div>
 <?php endif; ?>
 
-<form method="POST" class="admin-form">
+<?php if ($product['image']): ?>
+    <img src="/phonehub/public/images/products/<?= htmlspecialchars($product['image']) ?>" alt="Current image" class="current-product-image">
+<?php endif; ?>
+
+<form method="POST" enctype="multipart/form-data" class="admin-form">
     <label for="name">Product Name</label>
     <input type="text" name="name" id="name" value="<?= htmlspecialchars($product['name']) ?>" required>
 
@@ -85,6 +117,9 @@ $categories = $pdo->query("SELECT * FROM categories ORDER BY name")->fetchAll();
 
     <label for="stock">Stock Quantity</label>
     <input type="number" name="stock" id="stock" min="0" value="<?= htmlspecialchars($product['stock']) ?>" required>
+
+    <label for="image">Replace Image (optional)</label>
+    <input type="file" name="image" id="image" accept="image/jpeg,image/png,image/webp">
 
     <button type="submit">Save Changes</button>
 </form>

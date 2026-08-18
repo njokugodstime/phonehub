@@ -13,7 +13,10 @@ if (!isset($_GET['slug']) || $_GET['slug'] === '') {
     } else {
 ?>
     <div class="product-details">
-        <h1><?= htmlspecialchars($product['name']) ?></h1>
+        <?php if ($product['image']): ?>
+    <img src="images/products/<?= htmlspecialchars($product['image']) ?>" alt="<?= htmlspecialchars($product['name']) ?>" class="product-detail-image">
+<?php endif; ?>
+<h1><?= htmlspecialchars($product['name']) ?></h1>
         <p class="price">$<?= number_format($product['price'], 2) ?></p>
         <p class="description"><?= nl2br(htmlspecialchars($product['description'])) ?></p>
         <p class="stock">
