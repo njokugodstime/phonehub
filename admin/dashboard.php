@@ -31,6 +31,7 @@ $totalRevenue = $pdo->query("SELECT COALESCE(SUM(total), 0) FROM orders WHERE st
 
 <div class="admin-links">
     <a href="add-product.php" class="admin-btn">+ Add Product</a>
+    <a href="manage-products.php" class="admin-btn">Manage Products</a>
     <a href="manage-orders.php" class="admin-btn">Manage Orders</a>
 </div>
 
